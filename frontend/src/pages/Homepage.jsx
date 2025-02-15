@@ -2,6 +2,7 @@ import React from 'react'
 import  Navbar  from '../components/Navbar'
 import HeroSection from '../components/HeroSection'
 import LineSeparator from '@/components/LineSeparator'
+import Features from '../components/Features'
 
 const Homepage = () => {
   return (
@@ -9,6 +10,7 @@ const Homepage = () => {
         <Navbar/>
         <HeroSection/>
         <LineSeparator/>
+        <Features/>
     </>
   )
 }

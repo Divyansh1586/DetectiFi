@@ -6,7 +6,7 @@ function Navbar() {
   return (
     <nav className="block w-full bg-white shadow-md">
   <div className="container mx-auto flex items-center justify-between px-4 py-2 lg:px-8 lg:py-3">
-    <a href="#" class="mr-4 block cursor-pointer py-1.5 text-base text-slate-800 font-semibold">
+    <a href="#" class="mr-4 block cursor-pointer py-1.5 text-xl text-slate-800 font-semibold">
       DetectiFi
     </a>
  
