@@ -11,6 +11,7 @@ const Homepage = () => {
         <HeroSection/>
         <LineSeparator/>
         <Features/>
+        <LineSeparator/>
     </>
   )
 }

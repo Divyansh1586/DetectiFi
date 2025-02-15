@@ -4,7 +4,7 @@ import { Card, CardTitle, CardHeader, CardContent } from './ui/card'
 const Features = () => {
   return (
     <>  
-        <div className='mx-4 md:mx-10 my-2'>
+        <div className='mx-4 md:mx-10 my-2 mb-7'>
             <p className='font-extrabold text-3xl md:text-4xl m-3 text-center my-5'>Features</p>
             <div className='flex flex-col md:flex-row gap-6'>
                 <Card className="w-full md:flex-1">
