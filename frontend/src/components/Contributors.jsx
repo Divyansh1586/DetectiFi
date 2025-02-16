@@ -4,46 +4,46 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 const data = {
     "names" : [{
-       "name" : "Divyansh",
+       "name" : "D Divyansh",
        "photo" : "/images/search.png",
        "description" : "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
        "github" : "https://github.com/Divyansh1586",
        "linkedin" : "https://www.linkedin.com/in/divyansh-d-4a7489332/",  
     },
     {
-        "name" : "Rishika",
+        "name" : "Rishika J",
         "photo" : "/images/search.png",
         "description" : "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
         "github" : "https://github.com/RishikaJala",
         "linkedin" : "https://www.linkedin.com/in/rishika-jala-796930324/",  
      },
      {
-        "name" : "Bhavagna",
+        "name" : "A Bhavagna",
         "photo" : "/images/search.png",
         "description" : "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
         "github" : "https://github.com/bhavagna06",
         "linkedin" : "https://www.linkedin.com/",  
      },
      {
-        "name" : "Anirudh",
+        "name" : "RVS Anirudh",
         "photo" : "/images/search.png",
         "description" : "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
         "github" : "https://github.com/Anirudh-KMIT",
         "linkedin" : "https://www.linkedin.com/",  
      },
      {
-        "name" : "Shreya",
+        "name" : "Shreya N",
         "photo" : "/images/search.png",
         "description" : "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
         "github" : "https://github.com/ShreyaNamdeo",
         "linkedin" : "https://www.linkedin.com/in/shreya-namdeo-9bb0b2319/",  
      },
      {
-        "name" : "Rishith",
+        "name" : "Rishit Y",
         "photo" : "/images/search.png",
         "description" : "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
         "github" : "https://github.com/RishitYengandula",
-        "linkedin" : "https://www.linkedin.com/",  
+        "linkedin" : "https://www.linkedin.com/in/rishit-yengandula/",  
      },
     ]
 }

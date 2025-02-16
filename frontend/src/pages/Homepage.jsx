@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{ useRef } from 'react'
 import  Navbar  from '../components/Navbar'
 import HeroSection from '../components/HeroSection'
 import LineSeparator from '@/components/LineSeparator'
@@ -7,16 +7,30 @@ import Contributors from '@/components/Contributors'
 import Footer from '@/components/Footer'
 
 const Homepage = () => {
+  const featuresRef = useRef(null)
+  const contributorsRef = useRef(null)
+  const footerRef = useRef(null)
+
+  const scrollToSection = (ref) => {
+    ref.current?.scrollIntoView({ behavior: 'smooth' })
+  }
   return (
     <>
-        <Navbar/>
+        <Navbar scrollToSection={scrollToSection} featuresRef={featuresRef} contributorsRef={contributorsRef} 
+        footerRef={footerRef}/>
         <HeroSection/>
         <LineSeparator/>
-        <Features/>
+        <div ref={featuresRef}>
+          <Features />
+        </div>
         <LineSeparator/>
-        <Contributors/>
+        <div ref={contributorsRef}>
+          <Contributors />
+        </div>
         <LineSeparator/>
-        <Footer/>
+        <div ref = {footerRef}>
+          <Footer/>
+        </div>
     </>
   )
 }
