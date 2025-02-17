@@ -5,7 +5,7 @@ import LineSeparator from '@/components/LineSeparator'
 import Features from '../components/Features'
 import Contributors from '@/components/Contributors'
 import Footer from '@/components/Footer'
-
+ 
 const Homepage = () => {
   const featuresRef = useRef(null)
   const contributorsRef = useRef(null)
