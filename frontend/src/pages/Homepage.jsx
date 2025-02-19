@@ -5,6 +5,8 @@ import LineSeparator from '@/components/LineSeparator'
 import Features from '../components/Features'
 import Contributors from '@/components/Contributors'
 import Footer from '@/components/Footer'
+import Acco from '@/components/Acco'
+
  
 const Homepage = () => {
   const featuresRef = useRef(null)
@@ -27,6 +29,8 @@ const Homepage = () => {
         <div ref={contributorsRef}>
           <Contributors />
         </div>
+        <LineSeparator/>
+          <Acco/>
         <LineSeparator/>
         <div ref = {footerRef}>
           <Footer/>

@@ -53,7 +53,7 @@ const Contributors = () => {
      <div className="mx-4 mb-8 sm:mx-10">
        <p className="font-extrabold text-3xl md:text-4xl m-3 text-center my-5">Contributors</p>
  
-       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-8">
+       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-6 gap-8">
          {data.names.map((id) => (
            <Card
              key={id.name}
