@@ -9,19 +9,38 @@ import { jwtDecode } from "jwt-decode";
 import { useState } from "react";
 
 
-const CLIENT_ID = import.meta.env.CLIENT_ID;
+const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
 
 export function LoginModal() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate(); // ✅ Initialize useNavigate for redirection
 
-  const handleLoginSuccess = (credentialResponse) => {
+  const handleLoginSuccess = async (credentialResponse) => {
     const decodedUser = jwtDecode(credentialResponse.credential);
-    setUser(decodedUser);
-    console.log("User:", decodedUser);
+    
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/google', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: decodedUser.email,
+          name: decodedUser.name,
+          googleId: decodedUser.sub,
+          picture: decodedUser.picture
+        })
+      });
 
-    // ✅ Redirect user to dashboard after successful login
-    navigate("/dashboard");
+      const data = await response.json();
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+        setUser(data.user);
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   const handleLogout = () => {
@@ -44,7 +63,30 @@ export function LoginModal() {
               <CardDescription>Enter your email below to login to your account</CardDescription>
             </CardHeader>
             <CardContent>
-              <form>
+              <form onSubmit={async (e) => {
+                  e.preventDefault();
+                  const email = e.target.email.value;
+                  const password = e.target.password.value;
+
+                  try {
+                    const response = await fetch('http://localhost:5000/api/auth/login', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({ email, password })
+                    });
+
+                    const data = await response.json();
+                    if (data.token) {
+                      localStorage.setItem('token', data.token);
+                      setUser(data.user);
+                      navigate('/dashboard');
+                    }
+                  } catch (error) {
+                    console.error('Error:', error);
+                  }
+                }}>
                 <div className="flex flex-col gap-6">
                   <div className="grid gap-2">
                     <Label htmlFor="email">Email</Label>
@@ -87,3 +129,4 @@ export function LoginModal() {
     </GoogleOAuthProvider>
   );
 }
+

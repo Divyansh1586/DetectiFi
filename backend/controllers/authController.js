@@ -23,6 +23,8 @@ exports.register = async (req, res) => {
         const payload = {
             user: {
                 id: user.id,
+                email: user.email,
+                username: user.username
             },
         };
 
@@ -32,7 +34,54 @@ exports.register = async (req, res) => {
             { expiresIn: '1h' },
             (err, token) => {
                 if (err) throw err;
-                res.json({ token });
+                res.json({ token, user: payload.user });
+            }
+        );
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+};
+
+// Google OAuth login/register
+exports.googleAuth = async (req, res) => {
+    const { email, name, googleId, picture } = req.body;
+
+    try {
+        let user = await User.findOne({ email });
+
+        if (!user) {
+            // Create new user if doesn't exist
+            user = new User({
+                username: name,
+                email,
+                googleId,
+                picture
+            });
+            await user.save();
+        } else if (!user.googleId) {
+            // Update existing user with Google info
+            user.googleId = googleId;
+            user.picture = picture;
+            await user.save();
+        }
+
+        const payload = {
+            user: {
+                id: user.id,
+                email: user.email,
+                username: user.username,
+                picture: user.picture
+            },
+        };
+
+        jwt.sign(
+            payload,
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' },
+            (err, token) => {
+                if (err) throw err;
+                res.json({ token, user: payload.user });
             }
         );
     } catch (err) {
