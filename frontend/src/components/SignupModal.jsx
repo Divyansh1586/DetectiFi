@@ -2,42 +2,48 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { X } from 'lucide-react';
-import { Link } from "react-router-dom";
+import { X } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin, googleLogout } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { useState } from "react";
 
-
 const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
+const register = import.meta.env.VITE_REGISTER; // ✅ Fixed: Corrected environment variable name
+const google_login = import.meta.env.VITE_GOOGLE_LOGIN; // ✅ Fixed: Corrected environment variable name
+
 export function SignupModal() {
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
+  // ✅ Fixed: Proper fetch syntax & response validation
   const handleLoginSuccess = async (credentialResponse) => {
     const decodedUser = jwtDecode(credentialResponse.credential);
-    
+
     try {
-      const response = await fetch('http://localhost:5000/api/auth/google', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const response = await fetch(google_login, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: decodedUser.email,
           name: decodedUser.name,
           googleId: decodedUser.sub,
-          picture: decodedUser.picture
-        })
+          picture: decodedUser.picture,
+        }),
       });
 
-      const data = await response.json();
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : {};
+
       if (data.token) {
-        localStorage.setItem('token', data.token);
+        localStorage.setItem("token", data.token);
         setUser(data.user);
-        navigate('/dashboard');
+        navigate("/dashboard");
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
@@ -61,31 +67,35 @@ export function SignupModal() {
               <CardDescription>Enter your details below to create your account</CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={async (e) => {
+              <form
+                onSubmit={async (e) => {
                   e.preventDefault();
                   const email = e.target.email.value;
                   const password = e.target.password.value;
-                  const username = email.split('@')[0];
+                  const username = email.split("@")[0];
 
                   try {
-                    const response = await fetch('http://localhost:5000/api/auth/register', {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({ email, password, username })
+                    const response = await fetch(register, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ email, password, username }),
                     });
 
-                    const data = await response.json();
+                    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+                    const text = await response.text();
+                    const data = text ? JSON.parse(text) : {};
+
                     if (data.token) {
-                      localStorage.setItem('token', data.token);
+                      localStorage.setItem("token", data.token);
                       setUser(data.user);
-                      navigate('/dashboard');
+                      navigate("/dashboard");
                     }
                   } catch (error) {
-                    console.error('Error:', error);
+                    console.error("Error:", error);
                   }
-                }}>
+                }}
+              >
                 <div className="flex flex-col gap-6">
                   <div className="grid gap-2">
                     <Label htmlFor="email">Email</Label>
@@ -99,7 +109,7 @@ export function SignupModal() {
                     <Label htmlFor="confirmPassword">Confirm Password</Label>
                     <Input id="confirmPassword" type="password" required />
                   </div>
-                  <Button type="submit" className="w-full">
+                  <Button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white">
                     Create Account
                   </Button>
                   <div className="relative">
@@ -138,4 +148,3 @@ export function SignupModal() {
     </GoogleOAuthProvider>
   );
 }
-

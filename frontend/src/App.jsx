@@ -2,7 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Homepage from './pages/Homepage';
 import { LoginModal } from './components/LoginModal';
 import { SignupModal } from './components/SignupModal';
-
+// import { Dashboard } from './components/Dashboard';
+import Dashboard from "./components/Dashboard.jsx";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<LoginModal/>} />
         <Route path="/signup" element={<SignupModal />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
   );

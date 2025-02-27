@@ -8,3 +8,4 @@ router.get('/protected', auth, (req, res) => {
 
 module.exports = router;
 
+
