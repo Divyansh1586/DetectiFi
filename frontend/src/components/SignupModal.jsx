@@ -1,27 +1,29 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { GoogleOAuthProvider, GoogleLogin, googleLogout } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { X } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { GoogleOAuthProvider, GoogleLogin, googleLogout } from "@react-oauth/google";
-import { jwtDecode } from "jwt-decode";
-import { useState } from "react";
+import { setAuth } from "@/lib/auth";
 
 const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
-const register = import.meta.env.VITE_REGISTER; // ✅ Fixed: Corrected environment variable name
-const google_login = import.meta.env.VITE_GOOGLE_LOGIN; // ✅ Fixed: Corrected environment variable name
+const REGISTER_URL = import.meta.env.VITE_REGISTER;
+const GOOGLE_LOGIN_URL = import.meta.env.VITE_GOOGLE_LOGIN;
 
 export function SignupModal() {
   const [user, setUser] = useState(null);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // ✅ Fixed: Proper fetch syntax & response validation
+  // Handle Google login success
   const handleLoginSuccess = async (credentialResponse) => {
     const decodedUser = jwtDecode(credentialResponse.credential);
 
     try {
-      const response = await fetch(google_login, {
+      const response = await fetch(GOOGLE_LOGIN_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -34,22 +36,66 @@ export function SignupModal() {
 
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
-      const text = await response.text();
-      const data = text ? JSON.parse(text) : {};
-
+      const data = await response.json();
       if (data.token) {
         localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
         setUser(data.user);
         navigate("/dashboard");
       }
     } catch (error) {
       console.error("Error:", error);
+      setError("Google login failed. Please try again.");
     }
   };
 
+  // Handle Logout
   const handleLogout = () => {
     googleLogout();
     setUser(null);
+  };
+  // Handle form submission for manual signup
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setError(""); // Clear previous errors
+
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    const confirmPassword = e.target.confirmPassword.value;
+    const username = email.split("@")[0];
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    try {
+      const response = await fetch(REGISTER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, username }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 409 || data.message === "Email already exists") {
+          setError("This email is already registered. Please log in instead.");
+        } else {
+          setError("Registration failed. Please try again.");
+        }
+        return;
+      }
+
+      if (data.token) {
+        setAuth(data.token, data.user);
+        setUser(data.user);
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setError("An error occurred. Please try again.");
+    }
   };
 
   return (
@@ -61,42 +107,17 @@ export function SignupModal() {
               <X className="w-5 h-5" />
             </Link>
           </button>
+
           <Card className="border-none shadow-none">
             <CardHeader>
               <CardTitle className="text-2xl">Create an account</CardTitle>
               <CardDescription>Enter your details below to create your account</CardDescription>
             </CardHeader>
             <CardContent>
-              <form
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  const email = e.target.email.value;
-                  const password = e.target.password.value;
-                  const username = email.split("@")[0];
-
-                  try {
-                    const response = await fetch(register, {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ email, password, username }),
-                    });
-
-                    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-
-                    const text = await response.text();
-                    const data = text ? JSON.parse(text) : {};
-
-                    if (data.token) {
-                      localStorage.setItem("token", data.token);
-                      setUser(data.user);
-                      navigate("/dashboard");
-                    }
-                  } catch (error) {
-                    console.error("Error:", error);
-                  }
-                }}
-              >
+              <form onSubmit={handleSignup}>
                 <div className="flex flex-col gap-6">
+                  {error && <p className="text-red-500 text-sm">{error}</p>}
+
                   <div className="grid gap-2">
                     <Label htmlFor="email">Email</Label>
                     <Input id="email" type="email" placeholder="m@example.com" required />
@@ -109,9 +130,11 @@ export function SignupModal() {
                     <Label htmlFor="confirmPassword">Confirm Password</Label>
                     <Input id="confirmPassword" type="password" required />
                   </div>
+
                   <Button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white">
                     Create Account
                   </Button>
+
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">
                       <span className="w-full border-t" />
@@ -131,7 +154,7 @@ export function SignupModal() {
                       </Button>
                     </div>
                   ) : (
-                    <GoogleLogin onSuccess={handleLoginSuccess} onError={() => console.log("Login Failed")} />
+                    <GoogleLogin onSuccess={handleLoginSuccess} onError={() => setError("Google login failed. Try again.")} />
                   )}
                 </div>
                 <div className="mt-4 text-center text-sm">

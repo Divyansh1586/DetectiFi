@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { UploadCloud } from 'lucide-react';
@@ -6,6 +6,24 @@ import { Button } from '@/components/ui/button';
 
 export default function CrimeSceneDashboard() {
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [user, setUser] = useState(null);
+  // const navigate = useNavigate();
+  useEffect(() => {
+    // Get user details from localStorage after login
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // Remove authentication token
+    localStorage.removeItem("user"); // Remove user details
+    setUser(null); // Clear user state
+    window.location.href = "/login"; // Redirect to login page
+    // navigate("/login");
+
+  };
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: 'image/*',
@@ -18,7 +36,27 @@ export default function CrimeSceneDashboard() {
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
-      <h1 className="text-3xl font-bold text-gray-800">Crime Scene Analysis Dashboard</h1>
+      {/* Header with User Profile */}
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-gray-800">Crime Scene Analysis Dashboard</h1>
+
+        {/* User Profile Section */}
+        {user ? (
+          <div className="flex items-center space-x-4">
+            <img
+              src={user.picture || `https://ui-avatars.com/api/?name=${user.username}&background=random`}
+              alt="Profile"
+              className="w-10 h-10 rounded-full"
+            />
+            <div className="text-gray-800">
+              <p className="font-semibold">{user.username}</p>
+              <button onClick={handleLogout} className="text-red-500 text-sm underline">Logout</button>
+            </div>
+          </div>
+        ) : (
+          <p className="text-gray-600">Loading user...</p>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Upload Section */}
