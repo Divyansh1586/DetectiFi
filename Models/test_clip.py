@@ -43,34 +43,6 @@ def test_clip_classifier(model, classifier, test_loader):
             
             # ✅ Extract image features using CLIP
             image_features = model.encode_image(images)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-     
             
             # ✅ Predict class labels
             outputs = classifier(image_features)
