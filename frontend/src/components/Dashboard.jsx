@@ -1,99 +1,171 @@
-import { useState, useEffect } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { UploadCloud } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useCallback, useEffect, useState, useRef } from "react";
+import { useDropzone } from "react-dropzone";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import profile from "../assets/profile.png";
 
-export default function CrimeSceneDashboard() {
-  const [uploadedFiles, setUploadedFiles] = useState([]);
+const Dashboard = () => {
+  const [files, setFiles] = useState([]);
   const [user, setUser] = useState(null);
-  // const navigate = useNavigate();
+  const [result, setResult] = useState("No results to display yet. Upload and process images to see analysis.");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef();
+  const navigate = useNavigate();
+
   useEffect(() => {
-    // Get user details from localStorage after login
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (!storedUser) {
+      navigate("/login");
+    } else {
+      console.log("User from localStorage:", storedUser);
+      setUser(storedUser);
     }
+
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [navigate]);
+
+  const onDrop = useCallback((acceptedFiles) => {
+    setFiles((prevFiles) => [
+      ...prevFiles,
+      ...acceptedFiles.map((file) =>
+        Object.assign(file, {
+          preview: URL.createObjectURL(file),
+        })
+      ),
+    ]);
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token"); // Remove authentication token
-    localStorage.removeItem("user"); // Remove user details
-    setUser(null); // Clear user state
-    window.location.href = "/login"; // Redirect to login page
-    // navigate("/login");
+  const removeImage = (index) => {
+    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
   };
 
   const { getRootProps, getInputProps } = useDropzone({
-    accept: 'image/*',
-    onDrop: (acceptedFiles) => {
-      setUploadedFiles(acceptedFiles.map(file => Object.assign(file, {
-        preview: URL.createObjectURL(file)
-      })));
-    }
+    onDrop,
+    accept: "image/*",
   });
 
-  return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6">
-      {/* Header with User Profile */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-800">Crime Scene Analysis Dashboard</h1>
+  const handleUpload = () => {
+    if (files.length === 0) {
+      toast.error("Please select images first.");
+      return;
+    }
 
-        {/* User Profile Section */}
-        {user ? (
-          <div className="flex items-center space-x-4">
+    const formData = new FormData();
+    files.forEach((file) => formData.append("images", file));
+
+    fetch("http://localhost:5000/single", {
+      method: "POST",
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        toast.success(data.msg || "Images uploaded successfully!");
+        if (data.result) setResult(data.result);
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error("Upload failed. Please try again.");
+      });
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-6 md:p-10">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl md:text-4xl font-bold">Crime Scene Analysis Dashboard</h1>
+
+        {/* Profile Image + Dropdown */}
+        {user && (
+          <div className="relative" ref={dropdownRef}>
             <img
-              src={user.picture || `https://ui-avatars.com/api/?name=${user.username}&background=random`}
+              src={profile}
               alt="Profile"
-              className="w-10 h-10 rounded-full"
+              className="w-10 h-10 rounded-full cursor-pointer border-2 border-gray-300 hover:border-red-600"
+              onClick={() => setDropdownOpen((prev) => !prev)}
             />
-            <div className="text-gray-800">
-              <p className="font-semibold">{user.username}</p>
-              <button onClick={handleLogout} className="text-red-500 text-sm underline">Logout</button>
-            </div>
+
+            {dropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-md py-2 z-50">
+                <div className="px-4 py-3 text-sm text-gray-800 border-b">
+                  {user.name || "No Name Found"}
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-gray-100"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
-        ) : (
-          <p className="text-gray-600">Loading user...</p>
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Upload Section */}
-        <Card className="border rounded-lg shadow-md">
-          <CardHeader>
-            <CardTitle>Upload Images</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div
-              {...getRootProps()}
-              className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 transition"
-            >
-              <input {...getInputProps()} />
-              <UploadCloud className="w-10 h-10 text-gray-400 mb-2" />
-              <p className="text-gray-600">Drag & drop some files here, or click to select files</p>
-            </div>
-            {uploadedFiles.length > 0 && (
-              <div className="mt-4 grid grid-cols-3 gap-2">
-                {uploadedFiles.map((file, index) => (
-                  <img key={index} src={file.preview} alt="Uploaded preview" className="w-20 h-20 rounded object-cover" />
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+      {/* Space between Title and Upload Section */}
+      <div className="flex flex-col md:flex-row gap-6 max-w-6xl mx-auto mt-10">
+        <div className="w-full md:w-1/2 p-6 border rounded-lg bg-white shadow-md">
+          <h2 className="font-semibold text-lg mb-4">Upload Images</h2>
+          <div
+            {...getRootProps({
+              className:
+                "border-dashed border-2 p-6 text-center cursor-pointer rounded-md bg-gray-50 hover:border-red-400",
+            })}
+          >
+            <input {...getInputProps()} />
+            <p className="text-gray-600">
+              Drag 'n' drop some files here, or click to select files
+            </p>
+          </div>
 
-        {/* Analysis Results */}
-        <Card className="border rounded-lg shadow-md">
-          <CardHeader>
-            <CardTitle>Analysis Results</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-600">No results to display yet. Upload and process images to see analysis.</p>
-            <Button className="mt-4 w-full bg-red-600 hover:bg-red-700 text-white">Process Images</Button>
-          </CardContent>
-        </Card>
+          <div className="mt-4 flex flex-wrap gap-4">
+            {files.map((file, index) => (
+              <div key={file.name} className="relative">
+                <img
+                  src={file.preview}
+                  alt="preview"
+                  className="w-24 h-24 object-cover rounded-lg"
+                />
+                <button
+                  className="absolute top-0 right-0 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                  onClick={() => removeImage(index)}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="w-full md:w-1/2 p-6 border rounded-lg bg-white shadow-md">
+          <h2 className="font-semibold text-lg mb-4">Analysis Results</h2>
+          <p className="text-gray-700 whitespace-pre-line">{result}</p>
+        </div>
+      </div>
+
+      <div className="flex justify-center mt-6">
+        <Button
+          onClick={handleUpload}
+          className="bg-red-600 hover:bg-red-700 text-white px-6 py-2"
+        >
+          Upload Images
+        </Button>
       </div>
     </div>
   );
-}
+};
+
+export default Dashboard;

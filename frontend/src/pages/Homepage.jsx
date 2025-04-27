@@ -20,20 +20,22 @@ const Homepage = () => {
     <>
         <Navbar scrollToSection={scrollToSection} featuresRef={featuresRef} contributorsRef={contributorsRef} 
         footerRef={footerRef}/>
-        <HeroSection/>
-        <LineSeparator/>
-        <div ref={featuresRef}>
-          <Features />
-        </div>
-        <LineSeparator/>
-        <div ref={contributorsRef}>
-          <Contributors />
-        </div>
-        <LineSeparator/>
+        <div className="pt-20 bg-white bg-slate-900 min-h-screen">
+          <HeroSection/>
+          <LineSeparator/>
+          <div ref={featuresRef}>
+            <Features />
+          </div>
+          <LineSeparator/>
+          <div ref={contributorsRef}>
+            <Contributors />
+          </div>
+          <LineSeparator/>
           <Acco/>
-        <LineSeparator/>
-        <div ref = {footerRef}>
-          <Footer/>
+          <LineSeparator/>
+          <div ref={footerRef}>
+            <Footer/>
+          </div>
         </div>
     </>
   )

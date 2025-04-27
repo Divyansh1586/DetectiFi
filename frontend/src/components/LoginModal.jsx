@@ -7,22 +7,29 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { X } from "lucide-react";
-import { setAuth } from "@/lib/auth";
 
 const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
 const LOGIN_URL = import.meta.env.VITE_LOGIN;
 const GOOGLE_LOGIN_URL = import.meta.env.VITE_GOOGLE_LOGIN;
 
-export function LoginModal() {
+const LoginModal = () => {
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // ✅ Google Login Success Handler
   const handleLoginSuccess = async (credentialResponse) => {
-    const decodedUser = jwtDecode(credentialResponse.credential);
+    if (!credentialResponse?.credential) {
+      setError("Failed to get Google credentials");
+      return;
+    }
 
     try {
+      const decodedUser = jwtDecode(credentialResponse.credential);
+      if (!decodedUser?.email) {
+        setError("Invalid Google account information");
+        return;
+      }
+
       const response = await fetch(GOOGLE_LOGIN_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -34,34 +41,40 @@ export function LoginModal() {
         }),
       });
 
-      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-
       const data = await response.json();
 
-      if (data.token) {
-        setAuth(data.token, data.user);
-        setUser(data.user);
-        navigate("/dashboard");
+      if (!response.ok) {
+        throw new Error(data.message || `HTTP error! Status: ${response.status}`);
       }
+
+      if (!data.token) {
+        throw new Error("No token received from server");
+      }
+
+      localStorage.setItem("token", data.token);
+      setUser(data.user);
+      setError(""); // Clear any existing errors
+      navigate("/dashboard");
     } catch (error) {
-      console.error("Error:", error);
-      setError("Google login failed. Please try again.");
+      console.error("Google login error:", error);
+      setError(error.message || "Google login failed. Please try again.");
     }
   };
 
-  // ✅ Logout Handler
   const handleLogout = () => {
     googleLogout();
     setUser(null);
+    localStorage.removeItem("token");
+    navigate("/");
   };
 
-  // ✅ Handle Form Submission for Email/Password Login
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(""); // Clear previous errors
+    setError("");
 
-    const email = e.target.email.value;
-    const password = e.target.password.value;
+    const formData = new FormData(e.target);
+    const email = formData.get("email");
+    const password = formData.get("password");
 
     try {
       const response = await fetch(LOGIN_URL, {
@@ -70,21 +83,22 @@ export function LoginModal() {
         body: JSON.stringify({ email, password }),
       });
 
-      const text = await response.text();
-      const data = text ? JSON.parse(text) : {};
+      const data = await response.json();
 
       if (!response.ok) {
-        if (response.status === 409 || data.message === "Email does not exist") {
-          setError("Invalid email ID.");
-        } else {
-          setError("Login failed. Please try again.");
-        }
+        setError(data.message || "Login failed. Please try again.");
         return;
       }
+      const dashresponse=await fetch("http://localhost:5000/api/protected/dashboard",{
+        method:"GET",
+        headers: {
+          'Authorization': `Bearer ${data.token}`
+        }
 
-      if (data.token) {
+      })
+      if (data.token && dashresponse.ok) {
         localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("user", JSON.stringify(data.user));//new
         setUser(data.user);
         navigate("/dashboard");
       }
@@ -107,33 +121,32 @@ export function LoginModal() {
           <Card className="border-none shadow-none">
             <CardHeader>
               <CardTitle className="text-2xl">Login</CardTitle>
-              <CardDescription>Enter your email below to log in to your account</CardDescription>
+              <CardDescription>Enter your email below to log in</CardDescription>
             </CardHeader>
             <CardContent>
-              {/* {error && <p className="text-red-500 text-sm">{error}</p>} */}
-              {/* {error && <p className="text-red-500 text-sm text-center mt-2 block">{error}</p>} */}
               {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
-
               <form onSubmit={handleLogin}>
                 <div className="flex flex-col gap-6">
                   <div className="grid gap-2">
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" placeholder="m@example.com" required />
+                    <Input id="email" name="email" type="email" placeholder="m@example.com" required />
                   </div>
                   <div className="grid gap-2">
-                    <div className="flex items-center">
-                      <Label htmlFor="password">Password</Label>
-                      <a href="#" className="ml-auto text-sm underline">
-                        Forgot your password?
-                      </a>
-                    </div>
-                    <Input id="password" type="password" required />
+                    <Label htmlFor="password">Password</Label>
+                    <Input id="password" name="password" type="password" required />
                   </div>
                   <Button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white">
                     Login
                   </Button>
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white px-2 text-gray-500">Or continue with</span>
+                    </div>
+                  </div>
 
-                  {/* ✅ Google Authentication Section */}
                   {user ? (
                     <div className="text-center">
                       <h2>Welcome, {user.name}</h2>
@@ -159,4 +172,6 @@ export function LoginModal() {
       </div>
     </GoogleOAuthProvider>
   );
-}
+};
+
+export default LoginModal; //Fix: Exporting as default

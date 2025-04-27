@@ -51,14 +51,14 @@ const data = {
 
 const Acco = () => {
   return (
-    <div className='m-10'>
-      <p className="font-extrabold text-3xl md:text-4xl m-3 text-center my-5">Questions</p>
+    <div className='m-10 '>
+      <p className="font-extrabold text-3xl md:text-4xl m-3 text-center my-5 text-black">Questions</p>
       {/* Wrap all items inside a single Accordion */}
-      <Accordion type='single' collapsible>
+      <Accordion type='single' collapsible >
         {data.questions.map((item, index) => (
-          <AccordionItem key={index} value={item.question}>
-            <AccordionTrigger>{item.question}</AccordionTrigger>
-            <AccordionContent className="whitespace-pre-line mt-0 mb-1 text-sm leading-none">{item.answer}</AccordionContent>
+          <AccordionItem key={index} value={item.question} >
+            <AccordionTrigger className="text-black">{item.question}</AccordionTrigger>
+            <AccordionContent className="whitespace-pre-line mt-0 mb-1 text-sm leading-none text-gray-700">{item.answer}</AccordionContent>
           </AccordionItem>
         ))}
       </Accordion>

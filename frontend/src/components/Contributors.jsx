@@ -64,14 +64,14 @@ const Contributors = () => {
                  <AvatarImage src="/images/pfp.svg" />
                  <AvatarFallback>^-^</AvatarFallback>
                </Avatar>
-               <CardTitle className="text-lg font-semibold">{id.name}</CardTitle>
+               <CardTitle className="text-lg font-semibold dark:text-white">{id.name}</CardTitle>
              </CardHeader>
  
              <CardContent>
-               <p className="text-sm text-gray-600">{id.description}</p>
+               <p className="text-sm text-gray-600 dark:text-gray-300">{id.description}</p>
              </CardContent>
  
-             <CardFooter className="flex justify-center space-x-4 mt-2">
+             <CardFooter className="flex justify-center space-x-4 mt-2 dark:bg-gray-900">
                {/* GitHub */}
                <a href={id.github} target="_blank" rel="noopener noreferrer">
                  <img src="/images/github.svg" alt="GitHub" className="w-6 h-6 hover:opacity-80 transition-opacity" />

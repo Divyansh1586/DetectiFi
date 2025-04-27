@@ -5,7 +5,7 @@ const Features = () => {
   return (
     <>  
       <div className='mx-4 md:mx-10 my-2 mb-7'>
-        <p className='font-extrabold text-3xl md:text-4xl m-3 text-center my-5'>Features</p>
+        <p className='font-extrabold text-3xl md:text-4xl m-3 text-center my-5 text-gray-900 text-black'>Features</p>
 
         <div className='flex flex-col md:flex-row gap-6'>
           {/* Crime Classification */}
@@ -17,9 +17,9 @@ const Features = () => {
               </div>
             </CardHeader>
             <CardContent className="space-y-2">
-              <p className='text-base'>- Based on AI model CLIP (Contrastive Language-Image Pretraining)</p>
-              <p className='text-base'>- Analyzes crime scene images</p>
-              <p className='text-base'>- Categorizes crime</p>    
+              <p className='text-base text-gray-700 text-gray-700'>- Based on AI model CLIP (Contrastive Language-Image Pretraining)</p>
+              <p className='text-base text-gray-700 text-gray-700'>- Analyzes crime scene images</p>
+              <p className='text-base text-gray-700 text-gray-700'>- Categorizes crime</p>    
             </CardContent>
           </Card>
 
@@ -32,9 +32,9 @@ const Features = () => {
               </div>
             </CardHeader>
             <CardContent className="space-y-2">
-              <p className='text-base'>- Employs a Vision Transformer (ViT) model</p>
-              <p className='text-base'>- Detect critical details in crime scene images</p>
-              <p className='text-base'>- Can identify small yet crucial evidence</p>    
+              <p className='text-base text-gray-700 text-gray-700'>- Employs a Vision Transformer (ViT) model</p>
+              <p className='text-base text-gray-700 text-gray-700'>- Detect critical details in crime scene images</p>
+              <p className='text-base text-gray-700 text-gray-700'>- Can identify small yet crucial evidence</p>    
             </CardContent>
           </Card>
 
@@ -47,9 +47,9 @@ const Features = () => {
               </div>
             </CardHeader>
             <CardContent className="space-y-2">
-              <p className='text-base'>- Provides Crime Pattern Trends</p>
-              <p className='text-base'>- Detects Evidence Frequency</p>
-              <p className='text-base'>- Cross-Case Correlations</p>    
+              <p className='text-base text-gray-700 text-gray-700'>- Provides Crime Pattern Trends</p>
+              <p className='text-base text-gray-700 text-gray-700'>- Detects Evidence Frequency</p>
+              <p className='text-base text-gray-700 text-gray-700'>- Cross-Case Correlations</p>    
             </CardContent>
           </Card>
         </div>

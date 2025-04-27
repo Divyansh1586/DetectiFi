@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LoginModal } from '@/components/LoginModal';
+// import  LoginModal  from '@/components/LoginModal';
 import { Link } from 'react-router-dom';
 
 function Navbar({ scrollToSection, featuresRef, contributorsRef, footerRef }) {
@@ -14,7 +14,7 @@ function Navbar({ scrollToSection, featuresRef, contributorsRef, footerRef }) {
   return (
     <nav className="block w-full bg-white shadow-md mb-2">
       <div className="container mx-auto flex items-center justify-between px-4 py-2 lg:px-8 lg:py-3">
-        <a href="#" className="mr-4 block cursor-pointer py-1.5 text-xl text-slate-800 font-semibold">
+        <a href="/" className="mr-4 block cursor-pointer py-1.5 text-xl text-slate-800 font-semibold">
           DetectiFi
         </a>
 
