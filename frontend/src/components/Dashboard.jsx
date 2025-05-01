@@ -65,7 +65,7 @@ const Dashboard = () => {
     }
   
     const formData = new FormData();
-    formData.append("file", files[0]); // 👈 Use only the first image and key 'file'
+    formData.append("file", files[0]);
   
     fetch("http://127.0.0.1:8000/predict", {
       method: "POST",
@@ -74,11 +74,11 @@ const Dashboard = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        if (data.prediction) {
-          setResult(`Prediction: ${data.prediction}`);
-          toast.success("Prediction successful!");
+        if (data.analysis) {
+          setResult(`Analysis:\n${data.analysis}`);
+          toast.success("Analysis successful!");
         } else {
-          toast.error(data.error || "Prediction failed.");
+          toast.error(data.error || "Analysis failed.");
         }
       })
       .catch((err) => {
@@ -86,6 +86,7 @@ const Dashboard = () => {
         toast.error("Upload failed. Please try again.");
       });
   };
+  
   
 
 
