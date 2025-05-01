@@ -60,28 +60,34 @@ const Dashboard = () => {
 
   const handleUpload = () => {
     if (files.length === 0) {
-      toast.error("Please select images first.");
+      toast.error("Please select an image first.");
       return;
     }
-
+  
     const formData = new FormData();
-    files.forEach((file) => formData.append("images", file));
-
-    fetch("http://localhost:5000/single", {
+    formData.append("file", files[0]); // 👈 Use only the first image and key 'file'
+  
+    fetch("http://127.0.0.1:8000/predict", {
       method: "POST",
       body: formData,
     })
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        toast.success(data.msg || "Images uploaded successfully!");
-        if (data.result) setResult(data.result);
+        if (data.prediction) {
+          setResult(`Prediction: ${data.prediction}`);
+          toast.success("Prediction successful!");
+        } else {
+          toast.error(data.error || "Prediction failed.");
+        }
       })
       .catch((err) => {
         console.error(err);
         toast.error("Upload failed. Please try again.");
       });
   };
+  
+
 
   return (
     <div className="min-h-screen bg-gray-100 p-6 md:p-10">

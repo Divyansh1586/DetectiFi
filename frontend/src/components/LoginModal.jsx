@@ -89,7 +89,7 @@ const LoginModal = () => {
         setError(data.message || "Login failed. Please try again.");
         return;
       }
-      const dashresponse=await fetch("http://localhost:5000/api/protected/dashboard",{
+      const dashresponse=await fetch("http://localhost:5001/api/protected/dashboard",{
         method:"GET",
         headers: {
           'Authorization': `Bearer ${data.token}`
