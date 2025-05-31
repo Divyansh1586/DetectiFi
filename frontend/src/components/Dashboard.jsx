@@ -17,7 +17,7 @@ import WebcamStreamer from "./WebcamStreamer";
 import AnalysisDisplay from "./AnalysisDisplay";
 import PastAnalysesModal from "./PastAnalysesModal";
 
-const API_BASE_URL = "http://localhost:5001/api"; // Backend API
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL ; // Backend API
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,

@@ -23,7 +23,7 @@ res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
   next();
 });
 
-app.use(cors({ origin: ["http://localhost:5173", "http://localhost:5001"], credentials: true }));
+app.use(cors({ origin: "*", credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -35,7 +35,7 @@ app.use("/api/protected", require("./routes/protected"));
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-const FASTAPI_BASE_URL = "http://127.0.0.1:8000";
+const FASTAPI_BASE_URL = process.env.FASTAPI_BASE_URL;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 let genAI;
