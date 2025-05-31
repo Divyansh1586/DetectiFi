@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin, googleLogout } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,7 @@ import { X } from "lucide-react";
 const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
 const LOGIN_URL = import.meta.env.VITE_LOGIN;
 const GOOGLE_LOGIN_URL = import.meta.env.VITE_GOOGLE_LOGIN;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const LoginModal = () => {
   const [user, setUser] = useState(null);
@@ -30,22 +32,12 @@ const LoginModal = () => {
         return;
       }
 
-      const response = await fetch(GOOGLE_LOGIN_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: decodedUser.email,
-          name: decodedUser.name,
-          googleId: decodedUser.sub,
-          picture: decodedUser.picture,
-        }),
+      const { data } = await axios.post(GOOGLE_LOGIN_URL, {
+        email: decodedUser.email,
+        name: decodedUser.name,
+        googleId: decodedUser.sub,
+        picture: decodedUser.picture,
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || `HTTP error! Status: ${response.status}`);
-      }
 
       if (!data.token) {
         throw new Error("No token received from server");
@@ -57,7 +49,7 @@ const LoginModal = () => {
       navigate("/dashboard");
     } catch (error) {
       console.error("Google login error:", error);
-      setError(error.message || "Google login failed. Please try again.");
+      setError(error.response?.data?.message || "Google login failed. Please try again.");
     }
   };
 
@@ -77,34 +69,26 @@ const LoginModal = () => {
     const password = formData.get("password");
 
     try {
-      const response = await fetch(LOGIN_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const { data } = await axios.post(LOGIN_URL, { 
+        email, 
+        password 
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.message || "Login failed. Please try again.");
-        return;
-      }
-      const dashresponse=await fetch("http://localhost:5001/api/protected/dashboard",{
-        method:"GET",
+      const dashResponse = await axios.get(`${BACKEND_URL}/protected/dashboard`, {
         headers: {
           'Authorization': `Bearer ${data.token}`
         }
+      });
 
-      })
-      if (data.token && dashresponse.ok) {
+      if (data.token && dashResponse.status === 200) {
         localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));//new
+        localStorage.setItem("user", JSON.stringify(data.user));
         setUser(data.user);
         navigate("/dashboard");
       }
     } catch (error) {
       console.error("Error:", error);
-      setError("An error occurred. Please try again.");
+      setError(error.response?.data?.message || "An error occurred. Please try again.");
     }
   };
 
@@ -174,4 +158,4 @@ const LoginModal = () => {
   );
 };
 
-export default LoginModal; //Fix: Exporting as default
+export default LoginModal;
