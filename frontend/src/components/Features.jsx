@@ -32,9 +32,9 @@ const Features = () => {
               </div>
             </CardHeader>
             <CardContent className="space-y-2">
-              <p className='text-base text-gray-700 text-gray-700'>- Employs a Vision Transformer (ViT) model</p>
-              <p className='text-base text-gray-700 text-gray-700'>- Detect critical details in crime scene images</p>
-              <p className='text-base text-gray-700 text-gray-700'>- Can identify small yet crucial evidence</p>    
+              <p className='text-base text-gray-700 text-gray-700'>- Utilizes YOLOv8 for object detection</p>
+              <p className='text-base text-gray-700 text-gray-700'>- Detects and localizes critical visual evidence in crime scene images</p>
+              <p className='text-base text-gray-700 text-gray-700'>- Identifies small yet crucial objects like weapons, injuries, or suspicious items</p>    
             </CardContent>
           </Card>
 

@@ -52,10 +52,10 @@ const SignupModal = () => {
       }
 
       localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user)); // store user data
+      localStorage.setItem("user", JSON.stringify(data.user)); // Store user data in localStorage
       setUser(data.user);
-      setError("");
-      navigate("/login");
+      setError(""); // Clear any existing errors
+      navigate("/dashboard");
     } catch (error) {
       console.error("Google login error:", error);
       setError(error.message || "Google login failed. Please try again.");

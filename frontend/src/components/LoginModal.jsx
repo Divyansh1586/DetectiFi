@@ -52,6 +52,7 @@ const LoginModal = () => {
       }
 
       localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user)); // Store user data in localStorage
       setUser(data.user);
       setError(""); // Clear any existing errors
       navigate("/dashboard");
