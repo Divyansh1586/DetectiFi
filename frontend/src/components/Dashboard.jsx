@@ -16,6 +16,7 @@ import FileUploadArea from "./FileUploadArea";
 import WebcamStreamer from "./WebcamStreamer";
 import AnalysisDisplay from "./AnalysisDisplay";
 import PastAnalysesModal from "./PastAnalysesModal";
+import DarkModeToggle from "./DarkModeToggle";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL ; // Backend API
 
@@ -330,27 +331,37 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+    <div className="min-h-screen bg-gray-100 dark:bg-dark-background p-4 md:p-8 transition-colors duration-300 pt-20">
       <header className="flex justify-between items-center mb-6 md:mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Crime Analysis Dashboard</h1>
-        <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={() => setShowPastResultsModal(true)} disabled={isLoading || isWebcamActive}>View Past Results</Button>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-dark-text transition-colors duration-300 animate-fade-in-up">
+          Crime Analysis Dashboard
+        </h1>
+        <div className="flex items-center gap-3">
+          <DarkModeToggle />
+          <Button 
+            variant="outline"
+            onClick={() => setShowPastResultsModal(true)} 
+            disabled={isLoading || isWebcamActive}
+            className="dark:bg-dark-surface dark:text-dark-text dark:border-dark-border dark:hover:bg-gray-700 transition-all duration-300"
+          >
+            View Past Results
+          </Button>
           {user && (
             <div className="relative" ref={dropdownRef}>
               <img
                 src={user.picture || profile}
                 alt="Profile"
-                className="w-10 h-10 md:w-12 md:h-12 rounded-full cursor-pointer border-2 border-gray-300 hover:border-red-600"
+                className="w-10 h-10 md:w-12 md:h-12 rounded-full cursor-pointer border-2 border-gray-300 dark:border-dark-border hover:border-accent-red dark:hover:border-dark-primary transition-all duration-300"
                 onClick={() => setDropdownOpen((prev) => !prev)}
               />
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg py-2 z-50">
-                  <div className="px-4 py-3 text-sm text-gray-800 border-b">
-                    Logged in as: <strong>{user.name || user.email || "User"}</strong>
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-dark-surface border dark:border-dark-border rounded shadow-lg py-2 z-50 animate-fade-in-up">
+                  <div className="px-4 py-3 text-sm text-gray-800 dark:text-dark-text border-b dark:border-dark-border">
+                    Logged in as: <strong className="dark:text-dark-primary">{user.name || user.email || "User"}</strong>
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-gray-100 transition-colors duration-150"
+                    className="w-full text-left px-4 py-3 text-sm text-accent-red hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white transition-colors duration-150"
                   >
                     Logout
                   </button>
@@ -362,66 +373,70 @@ const Dashboard = () => {
       </header>
 
       <main className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-        <section>
-          <div className="mb-6 p-4 bg-white rounded-lg shadow">
-            <h2 className="font-semibold text-xl mb-3 text-gray-700">Select Processing Type</h2>
+        <section className="animate-slide-in-left">
+          <div className="mb-6 p-4 bg-white dark:bg-dark-surface rounded-lg shadow-lg dark:shadow-gray-900 transition-colors duration-300">
+            <h2 className="font-semibold text-xl mb-3 text-gray-700 dark:text-dark-text">
+              Select Processing Type
+            </h2>
             <div className="flex gap-4">
               <Button 
-                onClick={() => { setProcessingType("image"); setFiles([]); setCurrentFastApiOutput(null); setCurrentGeminiOutput(null); setCurrentDisplayOutput("Select files to process."); }} 
+                onClick={() => { setProcessingType("image"); setFiles([]); setCurrentFastApiOutput(null); setCurrentGeminiOutput(null); setCurrentDisplayOutput("Select files to process."); }}
                 variant={processingType === "image" ? "default" : "outline"}
-                className={processingType === "image" ? "bg-red-600 hover:bg-red-700 text-white" : ""}
+                className={`${processingType === "image" ? "bg-red-600 hover:bg-red-700 dark:bg-dark-primary dark:hover:bg-teal-400 text-white dark:text-dark-background" : "dark:text-dark-text dark:border-dark-border dark:hover:bg-gray-700"} transition-all duration-300`}
               >
                 Process Images
               </Button>
               <Button 
                 onClick={() => { setProcessingType("video"); setFiles([]); setCurrentFastApiOutput(null); setCurrentGeminiOutput(null); setCurrentDisplayOutput("Select files to process."); }}
                 variant={processingType === "video" ? "default" : "outline"}
-                className={processingType === "video" ? "bg-red-600 hover:bg-red-700 text-white" : ""}
+                className={`${processingType === "video" ? "bg-red-600 hover:bg-red-700 dark:bg-dark-primary dark:hover:bg-teal-400 text-white dark:text-dark-background" : "dark:text-dark-text dark:border-dark-border dark:hover:bg-gray-700"} transition-all duration-300`}
               >
                 Process Video
               </Button>
             </div>
           </div>
 
-          <div className="p-6 border rounded-lg bg-white shadow-md mb-6">
-            <h2 className="font-semibold text-xl mb-4 text-gray-700">Upload {processingType === "image" ? "Images" : "Video"}</h2>
+          <div className="p-6 border dark:border-dark-border rounded-lg bg-white dark:bg-dark-surface shadow-lg dark:shadow-gray-900 mb-6 transition-colors duration-300">
+            <h2 className="font-semibold text-xl mb-4 text-gray-700 dark:text-dark-text">
+              Upload {processingType === "image" ? "Images" : "Video"}
+            </h2>
             <div
               {...getRootProps({
-                className: `border-dashed border-2 p-6 text-center cursor-pointer rounded-md bg-gray-50 hover:border-red-400 transition-colors duration-150 ${isDragActive ? 'border-red-500 bg-red-50' : 'border-gray-300'}`
+                className: `border-dashed border-2 p-6 text-center cursor-pointer rounded-md bg-gray-50 dark:bg-gray-700 dark:border-gray-600 hover:border-accent-red dark:hover:border-dark-primary transition-colors duration-150 ${isDragActive ? 'border-accent-red dark:border-dark-primary bg-red-50 dark:bg-teal-700' : 'border-gray-300 dark:border-dark-border'}`
               })}
             >
               <input {...getInputProps()} />
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-dark-text-secondary">
                 {isDragActive ? 
                   `Drop the ${processingType} here ...` : 
                   `Drag 'n' drop ${processingType === 'image' ? 'some image files' : 'a video file'} here, or click to select`
                 }
               </p>
-              {processingType === "image" && <p className="text-sm text-gray-500 mt-1">Multiple images are allowed.</p>}
-              {processingType === "video" && <p className="text-sm text-gray-500 mt-1">Only a single video file is allowed.</p>}
+              {processingType === "image" && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Multiple images are allowed.</p>}
+              {processingType === "video" && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Only a single video file is allowed.</p>}
             </div>
 
             {files.length > 0 && (
               <div className="mt-4">
-                <h3 className="font-medium text-gray-700 mb-2">Selected file(s):</h3>
+                <h3 className="font-medium text-gray-700 dark:text-dark-text mb-2">Selected file(s):</h3>
                 <div className="flex flex-wrap gap-4">
                   {files.map((file, index) => (
-                    <div key={file.name + index} className="relative group">
+                    <div key={file.name + index} className="relative group animate-fade-in-up">
                       {file.type.startsWith("image/") ? (
                         <img
                           src={file.preview}
                           alt={`preview ${file.name}`}
-                          className="w-24 h-24 object-cover rounded-lg border border-gray-200"
+                          className="w-24 h-24 object-cover rounded-lg border border-gray-200 dark:border-dark-border shadow-md transition-transform duration-300 group-hover:scale-105"
                           onLoad={() => URL.revokeObjectURL(file.preview)}
                         />
                       ) : (
-                        <div className="w-24 h-24 flex flex-col items-center justify-center bg-gray-200 rounded-lg border border-gray-300 p-2">
-                          <span className="text-xs text-gray-600 truncate w-full text-center">{file.name}</span>
-                          <span className="text-xs text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB</span>
+                        <div className="w-24 h-24 flex flex-col items-center justify-center bg-gray-200 dark:bg-gray-700 rounded-lg border border-gray-300 dark:border-dark-border p-2 shadow-md transition-transform duration-300 group-hover:scale-105">
+                          <span className="text-xs text-gray-600 dark:text-dark-text-secondary truncate w-full text-center">{file.name}</span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">{(file.size / 1024 / 1024).toFixed(2)} MB</span>
                         </div>
                       )}
                       <button
-                        className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-150 shadow-md"
+                        className="absolute -top-2 -right-2 bg-accent-red text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-150 shadow-md hover:bg-red-700 dark:bg-dark-primary dark:text-dark-background dark:hover:bg-teal-400"
                         onClick={(e) => { e.stopPropagation(); removeFile(index); }}
                         title="Remove file"
                       >
@@ -435,32 +450,32 @@ const Dashboard = () => {
             <Button
               onClick={handleProcess}
               disabled={isLoading || files.length === 0 || isWebcamActive}
-              className="mt-6 w-full bg-red-600 hover:bg-red-700 text-white px-6 py-3 disabled:opacity-50"
+              className="mt-6 w-full bg-red-600 hover:bg-red-700 dark:bg-dark-primary dark:hover:bg-teal-400 text-white dark:text-dark-background px-6 py-3 disabled:opacity-50 transition-all duration-300 transform hover:scale-105 active:scale-95"
             >
               {isLoading ? `Processing ${processingType}...` : `Process ${processingType.charAt(0).toUpperCase() + processingType.slice(1)} with FastAPI`}
             </Button>
           </div>
          
-          <div className="p-6 border rounded-lg bg-white shadow-md">
-            <h2 className="font-semibold text-xl mb-4 text-gray-700">Live Webcam Feed</h2>
+          <div className="p-6 border dark:border-dark-border rounded-lg bg-white dark:bg-dark-surface shadow-lg dark:shadow-gray-900 transition-colors duration-300">
+            <h2 className="font-semibold text-xl mb-4 text-gray-700 dark:text-dark-text">Live Webcam Feed</h2>
             <div className="flex gap-4 mb-4">
               <Button 
                 onClick={handleStartWebcam} 
                 disabled={isLoading || isWebcamActive || files.length > 0}
-                className="bg-green-500 hover:bg-green-600 text-white disabled:opacity-50"
+                className="bg-green-500 hover:bg-green-600 dark:bg-accent-teal dark:hover:bg-teal-400 text-white dark:text-dark-background disabled:opacity-50 transition-all duration-300 transform hover:scale-105 active:scale-95"
               >
                 {isLoading && !isWebcamActive ? "Starting..." : "Start Webcam"}
               </Button>
               <Button 
                 onClick={handleStopWebcam} 
                 disabled={isLoading || !isWebcamActive}
-                className="bg-red-500 hover:bg-red-600 text-white disabled:opacity-50"
+                className="bg-red-500 hover:bg-red-600 dark:bg-accent-red dark:hover:bg-red-700 text-white disabled:opacity-50 transition-all duration-300 transform hover:scale-105 active:scale-95"
               >
                 {isLoading && isWebcamActive ? "Stopping..." : "Stop Webcam"}
               </Button>
             </div>
             {isWebcamActive && (
-              <div className="mt-4 border border-gray-300 rounded overflow-hidden bg-black aspect-video">
+              <div className="mt-4 border border-gray-300 dark:border-dark-border rounded overflow-hidden bg-black aspect-video shadow-inner animate-subtle-pulse">
                 <img 
                     ref={webcamFeedRef} 
                     src={`${API_BASE_URL}/process/webcam-start?t=${new Date().getTime()}`}
@@ -474,32 +489,32 @@ const Dashboard = () => {
               </div>
             )}
              {!isWebcamActive && webcamFeedRef.current?.src && (
-                <p className="text-sm text-gray-500 mt-2">Webcam was active. Start again to view.</p>
+                <p className="text-sm text-gray-500 dark:text-dark-text-secondary mt-2">Webcam was active. Start again to view.</p>
             )}
             {!isWebcamActive && !webcamFeedRef.current?.src && (
-                 <p className="text-sm text-gray-500 mt-2">Webcam is currently off. Click "Start Webcam" to begin streaming.</p>
+                 <p className="text-sm text-gray-500 dark:text-dark-text-secondary mt-2">Webcam is currently off. Click "Start Webcam" to begin streaming.</p>
             )}
           </div>
         </section>
 
-        <section className="flex flex-col gap-6 md:gap-8">
-          <div className="p-6 border rounded-lg bg-white shadow-md min-h-[300px] flex-grow flex flex-col">
-            <h2 className="font-semibold text-xl mb-4 text-gray-700">Current Analysis Output</h2>
-            <ScrollArea className="flex-grow mb-4 bg-gray-50 p-4 rounded-md min-h-[200px]">
-                <pre className="text-gray-700 whitespace-pre-wrap text-sm ">{currentDisplayOutput}</pre>
+        <section className="flex flex-col gap-6 md:gap-8 animate-slide-in-left animation-delay-200">
+          <div className="p-6 border dark:border-dark-border rounded-lg bg-white dark:bg-dark-surface shadow-lg dark:shadow-gray-900 min-h-[300px] flex-grow flex flex-col transition-colors duration-300">
+            <h2 className="font-semibold text-xl mb-4 text-gray-700 dark:text-dark-text">Current Analysis Output</h2>
+            <ScrollArea className="flex-grow mb-4 bg-gray-50 dark:bg-gray-800 p-4 rounded-md min-h-[200px] border dark:border-dark-border transition-colors duration-300">
+                <pre className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap text-sm ">{currentDisplayOutput}</pre>
             </ScrollArea>
-            <div className="flex flex-col sm:flex-row gap-3 mt-auto pt-4 border-t border-gray-200">
+            <div className="flex flex-col sm:flex-row gap-3 mt-auto pt-4 border-t border-gray-200 dark:border-dark-border transition-colors duration-300">
               <Button 
                 onClick={handleAnalyzeWithGemini} 
                 disabled={!currentFastApiOutput || isLoading || isAnalyzingWithGemini || isWebcamActive}
-                className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 flex-1"
+                className="bg-blue-600 hover:bg-blue-700 dark:bg-accent-blue dark:hover:bg-blue-500 text-white dark:text-dark-text disabled:opacity-50 flex-1 transition-all duration-300 transform hover:scale-105 active:scale-95"
               >
                 {isAnalyzingWithGemini ? "Analyzing with AI..." : "Analyze with AI Assistant"}
               </Button>
               <Button 
                 onClick={handleSaveAnalysis} 
                 disabled={!currentFastApiOutput || isLoading || isSaving || isWebcamActive}
-                className="bg-green-600 hover:bg-green-700 text-white disabled:opacity-50 flex-1"
+                className="bg-green-600 hover:bg-green-700 dark:bg-accent-teal dark:hover:bg-teal-500 text-white dark:text-dark-text disabled:opacity-50 flex-1 transition-all duration-300 transform hover:scale-105 active:scale-95"
               >
                 {isSaving ? "Saving..." : "Save Current Analysis"}
               </Button>

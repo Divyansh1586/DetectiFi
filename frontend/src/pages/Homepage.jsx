@@ -20,20 +20,20 @@ const Homepage = () => {
     <>
         <Navbar scrollToSection={scrollToSection} featuresRef={featuresRef} contributorsRef={contributorsRef} 
         footerRef={footerRef}/>
-        <div className="pt-20 bg-white bg-slate-900 min-h-screen">
+        <div className="pt-20 bg-white dark:bg-dark-background text-gray-800 dark:text-dark-text min-h-screen transition-colors duration-300">
           <HeroSection/>
           <LineSeparator/>
-          <div ref={featuresRef}>
+          <div ref={featuresRef} className="scroll-mt-20">
             <Features />
           </div>
           <LineSeparator/>
-          <div ref={contributorsRef}>
+          <div ref={contributorsRef} className="scroll-mt-20">
             <Contributors />
           </div>
           <LineSeparator/>
           <Acco/>
           <LineSeparator/>
-          <div ref={footerRef}>
+          <div ref={footerRef} className="scroll-mt-20">
             <Footer/>
           </div>
         </div>
